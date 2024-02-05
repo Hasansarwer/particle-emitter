@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tutorial-01 by Dr. Hasan Sarwer: Hello World</title>
+    <script src="https://pixijs.io/particle-emitter/examples/libs/pixi.js/dist/browser/pixi.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        pre {
+            background-color: #f4f4f4;
+            padding: 10px;
+            overflow-x: auto;
+        }
+        code {
+            font-family: monospace;
+        }
+    </style>
+    
+    
+</head>
+<body>
+    <h1>Hello World</h1>
+    <p>Let's start with a simple example. We will create a Pixi application and display a simple text on the screen.</p>
+    <p>First, we need to create an HTML file and include the Pixi library. You can download the library from the official website or use a CDN. In this example, we will use the CDN.</p>
+    <p>Here is the code for the HTML file:</p>
+    <pre>
+        <code>
+            &lt;!DOCTYPE html&gt;
+            &lt;html lang="en"&gt;
+            &lt;head&gt;
+                &lt;meta charset="UTF-8"&gt;
+                &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+                &lt;title&gt;Hello World&lt;/title&gt;
+                &lt;script src="https://pixijs.io/particle-emitter/examples/libs/pixi.js/dist/browser/pixi.js"&gt;&lt;/script&gt;
+            &lt;/head&gt;
+            &lt;body&gt;
+                &lt;script&gt;
+                    // Create a Pixi application
+                    const app = new PIXI.Application({ width: 256, height: 256 });
+
+                    // Add the canvas to the HTML document
+                    document.body.appendChild(app.view);
+
+                    // Create a new Text object
+                    const message = new PIXI.Text('Hello World!', new PIXI.TextStyle({ fill: 0xFFFFFF }));
+
+                    // Center the text
+                    message.anchor.set(0.5);
+                    message.x = app.screen.width / 2;
+                    message.y = app.screen.height / 2;
+
+                    // Add the text to the stage
+                    app.stage.addChild(message);
+                &lt;/script&gt;
+            &lt;/body&gt;
+            &lt;/html&gt;
+        </code>
+    </pre>
+    <p>Save the file and open it in a web browser. You should see a simple text "Hello World!" displayed on the screen.</p>
+    <p>That's it! You have created your first Pixi application. In the next tutorial, we will learn how to create a more complex application with multiple elements and interactions.</p>
+    <script>
+        // Create a Pixi application
+        const app = new PIXI.Application({ width: 256, height: 256 });
+
+        // Add the canvas to the HTML document
+        document.body.appendChild(app.view);
+
+        // Create a new Text object
+        const message = new PIXI.Text('Hello World!', new PIXI.TextStyle({ fill: 0xFFFFFF }));
+
+        // Center the text
+        message.anchor.set(0.5);
+        message.x = app.screen.width / 2;
+        message.y = app.screen.height / 2;
+
+        // Add the text to the stage
+        app.stage.addChild(message);
+    </script>
+
+    
+</body>
+</html>
