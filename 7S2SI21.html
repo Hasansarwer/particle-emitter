@@ -4,8 +4,38 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>7S2SI21 with pixijs by Dr. Hasan Sarwer.</title>
+    <script src="https://pixijs.io/particle-emitter/examples/libs/pixi.js/dist/browser/pixi.js"></script>
 </head>
 <body>
-    
+    <div>
+        <h1>
+            কঠিন, তরল ও গ্যাস       
+        </h1>
+    </div>
+    <canvas id="stage" width="400" height="400"></canvas>
+    <script>
+        const app = new PIXI.Application({ resizeTo: window });
+        document.body.appendChild(app.view);
+
+        const circle = new PIXI.Graphics();
+        circle.beginFill(0x9966FF);
+        circle.drawCircle(0, 0, 5);
+        circle.endFill();
+
+        const particles =[];
+
+        const totalParticles = 100;
+
+        for (let i=0; i< totalParticles; i++){
+            const particle = circle.clone();
+            particle.x = Math.random() * app.screen.width;
+            particle.y = Math.random() * app.screen.height;
+            particle.direction = Math.random() * Math.PI * 2;
+            particle.vx = Math.random() * 10 - 5;
+            particle.vy = Math.random() * 10 - 5;
+            particles.push(particle);
+            app.stage.addChild(particle);
+        }
+    </script>
 </body>
 </html>
