@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>7S2SI21 with pixijs by Dr. Hasan Sarwer.</title>
     <script src="https://pixijs.io/particle-emitter/examples/libs/pixi.js/dist/browser/pixi.js"></script>
+    <!-- <script src="https://pixijs.download/release/pixi.js"></script> -->
 </head>
 <body>
     <div>
@@ -12,30 +13,99 @@
             কঠিন, তরল ও গ্যাস       
         </h1>
     </div>
-    <canvas id="stage" width="400" height="400"></canvas>
+    <!-- <canvas id="stage" width="850" height="650"></canvas> -->
     <script>
-        const app = new PIXI.Application({ resizeTo: window });
+        const app = new PIXI.Application({ width: 800, height: 600});
         document.body.appendChild(app.view);
-
+        const radius = 5;
         const circle = new PIXI.Graphics();
-        circle.beginFill(0x9966FF);
-        circle.drawCircle(0, 0, 5);
+        // circle.lineStyle(0x21ECFE);
+        circle.beginFill(0x21ECFE);
+        circle.drawCircle(0, 0, radius);
         circle.endFill();
 
         const particles =[];
-
+        const boundsPadding = 0;
+        const bounds = new PIXI.Rectangle(
+            boundsPadding,
+            boundsPadding,
+            app.screen.width + boundsPadding * 2,
+            app.screen.height + boundsPadding * 2
+        );
         const totalParticles = 100;
-
+        velocity = 30;
+        const gravity = 0.01;
+        let friction = 1;
         for (let i=0; i< totalParticles; i++){
             const particle = circle.clone();
-            particle.x = Math.random() * app.screen.width;
-            particle.y = Math.random() * app.screen.height;
+            particle.x = Math.random() * app.screen.width + boundsPadding;
+            particle.y = 9*app.screen.height/10 + Math.random() * app.screen.height/10;
             particle.direction = Math.random() * Math.PI * 2;
-            particle.vx = Math.random() * 10 - 5;
-            particle.vy = Math.random() * 10 - 5;
+            particle.vx = Math.random() * velocity - velocity/2;
+            particle.vy = Math.random() * velocity - velocity/2;
             particles.push(particle);
             app.stage.addChild(particle);
         }
+        const slider = document.createElement('input');
+        slider.type = 'range';
+        slider.min = -10;
+        slider.max = 30;
+        slider.value = velocity;
+        slider.style.position = 'absolute';
+        slider.style.top = '600px';
+        slider.style.left = '850px';
+        slider.style.width = '100px';
+        slider.style.height = '20px';
+
+        const sliderValue = document.createElement('span');
+        sliderValue.innerHTML = slider.value; // Set initial value
+        sliderValue.style.position = 'absolute';
+        sliderValue.style.top = '625px'; // Position below the slider
+        sliderValue.style.left = '900px'; // Centered relative to the slider
+
+        
+        document.body.appendChild(slider);
+        document.body.appendChild(sliderValue);
+        slider.addEventListener('input', (event) => {
+            if(velocity<=0) friction = .3;
+            if(velocity!=0)    oldVelocity = velocity;
+            velocity = event.target.value;
+            sliderValue.innerHTML = velocity;
+            for (let i = 0; i < totalParticles; i++) {
+                const particle = particles[i];
+                particle.vx = particle.vx* velocity /oldVelocity;
+                particle.vy = particle.vy* velocity /oldVelocity;
+            }
+            console.log(particles[0].vx, particles[0].vy)
+        });
+        
+        
+        console.log(bounds);
+        let tick = 0;
+        app.ticker.add(() => {
+            for (let i = 0; i < totalParticles; i++) {
+                const particle = particles[i];
+                // particle.vx *= friction;
+                particle.vy += gravity;
+                // particle.vy *= friction;
+                particle.x += particle.vx;
+                particle.y += particle.vy;
+                if (particle.x < bounds.x+radius) {
+                    particle.x = 2*bounds.x - particle.x + 2*radius;
+                    particle.vx *= -1;
+                } else if (particle.x > bounds.x + bounds.width - radius) {
+                    particle.x = 2*(bounds.x+bounds.width) - particle.x - 2*radius;
+                    particle.vx *= -1;
+                }
+                if (particle.y < bounds.y + radius) {
+                    particle.y = 2*bounds.y -particle.y + 2*radius;
+                    particle.vy *= -1;
+                } else if (particle.y > bounds.y + bounds.height - radius) {
+                    particle.y =2*(bounds.y+bounds.height) -particle.y - 2*radius;
+                    particle.vy *= -friction;
+                }
+            }
+        });
     </script>
 </body>
 </html>
