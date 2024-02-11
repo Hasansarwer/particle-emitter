@@ -15,12 +15,12 @@
     </div>
     <!-- <canvas id="stage" width="850" height="650"></canvas> -->
     <script>
-        const app = new PIXI.Application({ width: 800, height: 600});
+        const app = new PIXI.Application({ width: 400, height: 300});
         document.body.appendChild(app.view);
         const radius = 5;
         const circle = new PIXI.Graphics();
         // circle.lineStyle(0x21ECFE);
-        circle.beginFill(0x21ECFE);
+        circle.beginFill(0x9ff3ff);
         circle.drawCircle(0, 0, radius);
         circle.endFill();
 
@@ -32,10 +32,11 @@
             app.screen.width + boundsPadding * 2,
             app.screen.height + boundsPadding * 2
         );
-        const totalParticles = 100;
-        velocity = 30;
-        const gravity = 0.01;
-        let friction = 1;
+        const totalParticles = 500;
+        let velocity = 3/4;
+        let currentVelocity = velocity;
+        let temparature = 25;
+        let yMax = 540;
         for (let i=0; i< totalParticles; i++){
             const particle = circle.clone();
             particle.x = Math.random() * app.screen.width + boundsPadding;
@@ -49,8 +50,8 @@
         const slider = document.createElement('input');
         slider.type = 'range';
         slider.min = -10;
-        slider.max = 30;
-        slider.value = velocity;
+        slider.max = 120;
+        slider.value = temparature;
         slider.style.position = 'absolute';
         slider.style.top = '600px';
         slider.style.left = '850px';
@@ -63,46 +64,57 @@
         sliderValue.style.top = '625px'; // Position below the slider
         sliderValue.style.left = '900px'; // Centered relative to the slider
 
+        // const sliderLabel = document.createElement('label');
+        // sliderLabel.innerHTML = 'তাপমাত্রা';
+        // sliderLabel.style.position = 'absolute';
+        // sliderLabel.style.top = '700px'; // Position below the slider
+        // sliderLabel.style.left = '1000px'; // Centered relative to the slider
         
         document.body.appendChild(slider);
         document.body.appendChild(sliderValue);
         slider.addEventListener('input', (event) => {
-            if(velocity<=0) friction = .3;
-            if(velocity!=0)    oldVelocity = velocity;
-            velocity = event.target.value;
-            sliderValue.innerHTML = velocity;
-            for (let i = 0; i < totalParticles; i++) {
-                const particle = particles[i];
-                particle.vx = particle.vx* velocity /oldVelocity;
-                particle.vy = particle.vy* velocity /oldVelocity;
-            }
-            console.log(particles[0].vx, particles[0].vy)
+            temparature = event.target.value;
+            // event.target.value !=0 ? velocity = event.target.value/10 : velocity = .1;
+            temparature >=100 ? velocity = 2+(temparature-100)/2 : (temparature < 100 && temparature > 0) ? velocity = 1/3+temparature/60 : velocity = 1/3;
+            
+            sliderValue.innerHTML = event.target.value;
         });
-        
         
         console.log(bounds);
         let tick = 0;
         app.ticker.add(() => {
+            oldVelocity = currentVelocity;
+            temparature < 100 ? (yMax < .9*bounds.height ? yMax+= .0002*bounds.height : yMax=.9*bounds.height) : yMax = 0;
+            console.log("yMax = ",yMax);
+            console.log("currentVelocity = ",currentVelocity);
+            currentVelocity > velocity ? currentVelocity *= .998 : currentVelocity *= 1.002;
             for (let i = 0; i < totalParticles; i++) {
                 const particle = particles[i];
-                // particle.vx *= friction;
-                particle.vy += gravity;
-                // particle.vy *= friction;
                 particle.x += particle.vx;
                 particle.y += particle.vy;
-                if (particle.x < bounds.x+radius) {
-                    particle.x = 2*bounds.x - particle.x + 2*radius;
-                    particle.vx *= -1;
-                } else if (particle.x > bounds.x + bounds.width - radius) {
-                    particle.x = 2*(bounds.x+bounds.width) - particle.x - 2*radius;
-                    particle.vx *= -1;
+                if (oldVelocity != currentVelocity){
+                    particle.vx = particle.vx* currentVelocity /oldVelocity;
+                    particle.vy = particle.vy* currentVelocity /oldVelocity;
                 }
-                if (particle.y < bounds.y + radius) {
-                    particle.y = 2*bounds.y -particle.y + 2*radius;
+                
+                if (temparature >0 || yMax < .9* bounds.height){
+                    if (particle.x < bounds.x+radius) {
+                        particle.x = 2*bounds.x - particle.x + 2*radius;
+                        particle.vx *= -1;
+                    } else if (particle.x > bounds.x + bounds.width - radius) {
+                        particle.x = 2*(bounds.x+bounds.width) - particle.x - 2*radius;
+                        particle.vx *= -1;
+                    }
+                    if (particle.y < yMax + bounds.y + radius) {
+                        particle.y = 2*bounds.y -particle.y + 2*radius +2*yMax;
+                        particle.vy *= -1;
+                    } else if (particle.y >  bounds.y + bounds.height - radius) {
+                        particle.y =2*( bounds.y + bounds.height - radius) -particle.y ;
+                        particle.vy *= -1;
+                    }
+                }else{
+                    particle.vx *= -1;
                     particle.vy *= -1;
-                } else if (particle.y > bounds.y + bounds.height - radius) {
-                    particle.y =2*(bounds.y+bounds.height) -particle.y - 2*radius;
-                    particle.vy *= -friction;
                 }
             }
         });
